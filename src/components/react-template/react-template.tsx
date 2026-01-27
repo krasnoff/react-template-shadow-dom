@@ -79,10 +79,8 @@ export const Template: React.FC<TemplateProps> = ({
 
     return (
         <div 
-            role="region" 
             aria-label="Sample Accessibility Component" 
             ref={hostRef} 
-            className={[].join(' ')} 
             id="container-accessibility-wrapper"
             key={key}> {/* Add key to force DOM recreation */}
         </div>
