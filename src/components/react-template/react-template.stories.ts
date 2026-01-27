@@ -14,9 +14,14 @@ const meta = {
   tags: ['autodocs'],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    text: { 
+    children: {
       control: 'text',
-      description: 'Text content for the template component'
+      description: 'React children to be rendered inside the shadow DOM'
+    },
+    shadowrootmode: {
+      control: { type: 'select' },
+      options: ['open', 'closed'],
+      description: 'Shadow DOM mode: open allows access from outside, closed does not'
     },
   },
 } satisfies Meta<typeof Template>;
@@ -26,23 +31,41 @@ type Story = StoryObj<typeof meta>;
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
-  args: {},
+  args: {
+    children: "Hello from children prop!sds",
+    shadowrootmode: "closed"
+  },
 };
 
 export const WithText: Story = {
   args: {
-    text: 'Custom text content',
+    children: 'Hello from children prop!',
   },
 };
 
 export const ShadowDOMExample: Story = {
   args: {
-    text: 'This demonstrates Shadow DOM encapsulation',
+    children: 'This content is rendered as children inside Shadow DOM',
+    shadowrootmode: 'open',
   },
   parameters: {
     docs: {
       description: {
         story: 'This story demonstrates how the React component is rendered within Shadow DOM, providing style encapsulation.',
+      },
+    },
+  },
+};
+
+export const ClosedShadowDOM: Story = {
+  args: {
+    children: 'This content is in a closed Shadow DOM',
+    shadowrootmode: 'closed',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story demonstrates a closed Shadow DOM where the shadow root is not accessible from outside the component.',
       },
     },
   },

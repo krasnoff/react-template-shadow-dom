@@ -1,33 +1,71 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from 'react-dom/client';
 
 export interface TemplateProps {
-    text?: string;
+    children?: React.ReactNode;
+    shadowrootmode?: 'open' | 'closed';
 }
 
-export const Template: React.FC<TemplateProps> = () => {
+export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = 'open' }) => {
     const hostRef = useRef<HTMLDivElement>(null);
+    const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
+    const [key, setKey] = useState(0); // Force remount when shadowrootmode changes
+    const isInitialMount = useRef(true);
 
+    // Force component remount when shadowrootmode changes
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return; // Skip on initial mount
+        }
+        
+        setKey(prev => prev + 1);
+        // Cleanup existing root
+        if (rootRef.current) {
+            rootRef.current.unmount();
+            rootRef.current = null;
+        }
+    }, [shadowrootmode, children]);
+
+    // Create shadow DOM when component mounts
     useEffect(() => {
         if (hostRef.current && hostRef.current.shadowRoot === null) {
-            const shadowDom = hostRef.current?.attachShadow({ mode: 'open' });
+            const shadowDom = hostRef.current.attachShadow({ mode: shadowrootmode });
             if (shadowDom) {
-                const root = createRoot(shadowDom);
-                root.render(shadowDomJsxElement);
+                rootRef.current = createRoot(shadowDom);
+                updateChildren();
             }
         }
-    }, []);
+    }, [key]); // Recreate when key changes
 
-    const shadowDomJsxElement = 
-    <div>
-        <p>This is a React component rendered inside Shadow DOM!</p>
-    </div>;
+    const updateChildren = () => {
+        if (rootRef.current) {
+            const shadowDomJsxElement = (
+                <>
+                    {children}
+                </>
+            );
+            rootRef.current.render(shadowDomJsxElement);
+        }
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (rootRef.current) {
+                rootRef.current.unmount();
+            }
+        };
+    }, []);
 
     return (
         <div 
             role="region" 
             aria-label="Sample Accessibility Component" 
-            ref={hostRef} className={[].join(' ')} id="container-accessibility-wrapper">
+            ref={hostRef} 
+            className={[].join(' ')} 
+            id="container-accessibility-wrapper"
+            key={key}> {/* Add key to force DOM recreation */}
         </div>
     );
 }
