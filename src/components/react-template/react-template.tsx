@@ -5,9 +5,18 @@ export interface TemplateProps {
     children?: React.ReactNode;
     shadowrootmode?: 'open' | 'closed';
     sheet?: CSSStyleSheet;
+    shadowrootclonable?: boolean;
+    shadowrootdelegatesfocus?: boolean;
+    shadowrootserializable?: boolean;
 }
 
-export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = 'open', sheet }) => {
+export const Template: React.FC<TemplateProps> = ({ 
+        children, 
+        shadowrootmode = 'open', 
+        sheet, 
+        shadowrootclonable = false, 
+        shadowrootdelegatesfocus = false, 
+        shadowrootserializable = false }) => {
     const hostRef = useRef<HTMLDivElement>(null);
     const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
     const [key, setKey] = useState(0); // Force remount when shadowrootmode changes
@@ -32,7 +41,12 @@ export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = '
     // Create shadow DOM when component mounts
     useEffect(() => {
         if (hostRef.current && hostRef.current.shadowRoot === null) {
-            const shadowDom = hostRef.current.attachShadow({ mode: shadowrootmode });
+            const shadowDom = hostRef.current.attachShadow({ 
+                mode: shadowrootmode, 
+                delegatesFocus: shadowrootdelegatesfocus, 
+                clonable: shadowrootclonable, 
+                serializable: shadowrootserializable 
+            });
             if (shadowDom) {
                 rootRef.current = createRoot(shadowDom);
                 updateChildren();
