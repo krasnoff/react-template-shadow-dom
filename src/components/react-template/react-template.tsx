@@ -36,7 +36,7 @@ export const Template: React.FC<TemplateProps> = ({
             rootRef.current.unmount();
             rootRef.current = null;
         }
-    }, [shadowrootmode, children]);
+    }, [shadowrootmode, children, sheet, shadowrootclonable, shadowrootdelegatesfocus, shadowrootserializable]);
 
     // Create shadow DOM when component mounts
     useEffect(() => {
