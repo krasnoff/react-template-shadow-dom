@@ -27,6 +27,18 @@ const meta = {
       control: false, // Disable control for programmatically created CSSStyleSheet
       description: 'CSSStyleSheet object to apply to Shadow DOM (controlled programmatically)'
     },
+    shadowrootclonable: {
+      control: 'boolean',
+      description: 'Whether the shadow root is clonable'
+    },
+    shadowrootdelegatesfocus: {
+      control: 'boolean',
+      description: 'Whether the shadow root delegates focus'
+    },
+    shadowrootserializable: {
+      control: 'boolean',
+      description: 'Whether the shadow root is serializable'
+    },
   },
 } satisfies Meta<typeof Template>;
 
