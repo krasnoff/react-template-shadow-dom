@@ -4,9 +4,10 @@ import { createRoot } from 'react-dom/client';
 export interface TemplateProps {
     children?: React.ReactNode;
     shadowrootmode?: 'open' | 'closed';
+    sheet?: CSSStyleSheet;
 }
 
-export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = 'open' }) => {
+export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = 'open', sheet }) => {
     const hostRef = useRef<HTMLDivElement>(null);
     const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
     const [key, setKey] = useState(0); // Force remount when shadowrootmode changes
@@ -20,6 +21,7 @@ export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = '
         }
         
         setKey(prev => prev + 1);
+        
         // Cleanup existing root
         if (rootRef.current) {
             rootRef.current.unmount();
@@ -34,6 +36,9 @@ export const Template: React.FC<TemplateProps> = ({ children, shadowrootmode = '
             if (shadowDom) {
                 rootRef.current = createRoot(shadowDom);
                 updateChildren();
+                if (sheet) {
+                    shadowDom.adoptedStyleSheets = [sheet];
+                }
             }
         }
     }, [key]); // Recreate when key changes
