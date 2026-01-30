@@ -303,20 +303,6 @@ function ConnectedCallbackExample() {
 
 Check out the [Storybook stories](./src/components/react-template/react-template.stories.ts) for more interactive examples and use cases.
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- 📖 [Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM)
-- 🐛 [Issue Tracker](https://github.com/your-username/react-template-shadow-dom/issues)
-- 💬 [Discussions](https://github.com/your-username/react-template-shadow-dom/discussions)
