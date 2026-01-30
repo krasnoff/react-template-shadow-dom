@@ -80,9 +80,7 @@ export const Template: React.FC<TemplateProps> = ({
 
     return (
         <div 
-            aria-label="Sample Accessibility Component" 
             ref={hostRef} 
-            id="container-accessibility-wrapper"
             key={key}> {/* Add key to force DOM recreation */}
         </div>
     );
