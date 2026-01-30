@@ -8,6 +8,8 @@ export interface TemplateProps {
     shadowrootclonable?: boolean;
     shadowrootdelegatesfocus?: boolean;
     shadowrootserializable?: boolean;
+    slotAssignment?: 'manual' | 'named';
+    connectedCallback?: (shadowRoot: ShadowRoot, hostElement: HTMLDivElement) => void;
 }
 
 export const Template: React.FC<TemplateProps> = ({ 
@@ -16,7 +18,9 @@ export const Template: React.FC<TemplateProps> = ({
         sheet, 
         shadowrootclonable = false, 
         shadowrootdelegatesfocus = false, 
-        shadowrootserializable = false }) => {
+        shadowrootserializable = false,
+        slotAssignment = 'named',
+        connectedCallback }) => {
     const hostRef = useRef<HTMLDivElement>(null);
     const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
     const [key, setKey] = useState(0); // Force remount when shadowrootmode changes
@@ -36,7 +40,7 @@ export const Template: React.FC<TemplateProps> = ({
             rootRef.current.unmount();
             rootRef.current = null;
         }
-    }, [shadowrootmode, children, sheet, shadowrootclonable, shadowrootdelegatesfocus, shadowrootserializable]);
+    }, [shadowrootmode, children, sheet, shadowrootclonable, shadowrootdelegatesfocus, shadowrootserializable, slotAssignment, connectedCallback]);
 
     // Create shadow DOM when component mounts
     useEffect(() => {
@@ -46,13 +50,18 @@ export const Template: React.FC<TemplateProps> = ({
                 delegatesFocus: shadowrootdelegatesfocus, 
                 clonable: shadowrootclonable, 
                 serializable: shadowrootserializable,
-                slotAssignment: 'named'
+                slotAssignment: slotAssignment
             });
             if (shadowDom) {
                 rootRef.current = createRoot(shadowDom);
                 updateChildren();
                 if (sheet) {
                     shadowDom.adoptedStyleSheets = [sheet];
+                }
+                
+                // Call connectedCallback when shadow DOM is successfully created
+                if (connectedCallback && hostRef.current) {
+                    connectedCallback(shadowDom, hostRef.current);
                 }
             }
         }

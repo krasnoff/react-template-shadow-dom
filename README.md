@@ -85,6 +85,8 @@ function StyledComponent() {
 | `shadowrootclonable` | `boolean` | `false` | Whether the shadow root can be cloned |
 | `shadowrootdelegatesfocus` | `boolean` | `false` | Whether focus delegation is enabled |
 | `shadowrootserializable` | `boolean` | `false` | Whether the shadow root can be serialized |
+| `slotAssignment` | `'manual' \| 'named'` | `'named'` | How slots are assigned in the shadow tree - 'named' for automatic assignment, 'manual' for programmatic control |
+| `connectedCallback` | `(shadowRoot: ShadowRoot, hostElement: HTMLDivElement) => void` | `undefined` | Callback function executed when Shadow DOM is successfully created and connected |
 
 ### TypeScript Interface
 
@@ -96,6 +98,8 @@ export interface TemplateProps {
     shadowrootclonable?: boolean;
     shadowrootdelegatesfocus?: boolean;
     shadowrootserializable?: boolean;
+    slotAssignment?: 'manual' | 'named';
+    connectedCallback?: (shadowRoot: ShadowRoot, hostElement: HTMLDivElement) => void;
 }
 ```
 
@@ -185,6 +189,90 @@ function ThemeIsolatedButton({ theme, children, onClick }: ButtonProps) {
       <button className="theme-button" onClick={onClick}>
         {children}
       </button>
+    </Template>
+  );
+}
+```
+
+### 4. Using Slot Assignment
+
+Control how slots are assigned within the Shadow DOM:
+
+```tsx
+function SlotAssignmentExample() {
+  return (
+    <Template 
+      shadowrootmode="open" 
+      slotAssignment="named"
+    >
+      <div>
+        <h2>Content with Named Slots</h2>
+        <slot name="header"></slot>
+        <p>Main content area</p>
+        <slot name="content"></slot>
+        <footer>
+          <slot name="footer"></slot>
+        </footer>
+      </div>
+    </Template>
+  );
+}
+
+// Usage with slotted content
+function App() {
+  return (
+    <SlotAssignmentExample>
+      <div slot="header">This goes in the header slot</div>
+      <div slot="content">This goes in the content slot</div>
+      <div slot="footer">This goes in the footer slot</div>
+    </SlotAssignmentExample>
+  );
+}
+```
+
+### 5. Using Connected Callback
+
+Execute custom logic when Shadow DOM is created:
+
+```tsx
+function ConnectedCallbackExample() {
+  const handleConnected = (shadowRoot: ShadowRoot, hostElement: HTMLDivElement) => {
+    console.log('Shadow DOM connected!', shadowRoot);
+    
+    // Add custom event listeners
+    shadowRoot.addEventListener('click', (e) => {
+      console.log('Clicked inside Shadow DOM:', e.target);
+    });
+    
+    // Modify host element
+    hostElement.style.border = '2px solid #10b981';
+    hostElement.style.borderRadius = '8px';
+    
+    // Access shadow DOM elements
+    const button = shadowRoot.querySelector('.my-button');
+    if (button) {
+      button.addEventListener('mouseenter', () => {
+        console.log('Button hovered');
+      });
+    }
+    
+    // Dynamic content updates
+    const timestamp = shadowRoot.querySelector('#timestamp');
+    if (timestamp) {
+      timestamp.textContent = `Connected at: ${new Date().toLocaleTimeString()}`;
+    }
+  };
+
+  return (
+    <Template 
+      shadowrootmode="open" 
+      connectedCallback={handleConnected}
+    >
+      <div>
+        <h3>Connected Callback Demo</h3>
+        <button className="my-button">Click me!</button>
+        <p id="timestamp">Connection time will appear here</p>
+      </div>
     </Template>
   );
 }

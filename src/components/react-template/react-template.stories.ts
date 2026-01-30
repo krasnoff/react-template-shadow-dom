@@ -39,6 +39,15 @@ const meta = {
       control: 'boolean',
       description: 'Whether the shadow root is serializable'
     },
+    slotAssignment: {
+      control: { type: 'select' },
+      options: ['manual', 'named'],
+      description: 'How slots are assigned: manual or named'
+    },
+    connectedCallback: {
+      control: false,
+      description: 'Callback function called when shadow DOM is connected (controlled programmatically)'
+    },
   },
 } satisfies Meta<typeof Template>;
 
@@ -178,4 +187,145 @@ export const MultipleStyleSheets: Story = {
   },
 };
 
+
+export const SlotAssignmentDemo: Story = {
+  args: {
+    children: React.createElement('div', { className: 'slot-demo' },
+      React.createElement('h3', null, 'Slot Assignment Demo'),
+      React.createElement('slot', { name: 'header' }),
+      React.createElement('p', null, 'This content demonstrates different slot assignment modes.'),
+      React.createElement('slot', { name: 'content' }),
+      React.createElement('div', { slot: 'footer' }, 'Footer content'),
+      React.createElement('slot', { name: 'footer' })
+    ),
+    shadowrootmode: 'open',
+    slotAssignment: 'named',
+    sheet: (() => {
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(`
+        .slot-demo {
+          padding: 20px;
+          border: 2px dashed #4f46e5;
+          border-radius: 8px;
+          font-family: Arial, sans-serif;
+        }
+        .slot-demo h3 {
+          color: #4f46e5;
+          margin-top: 0;
+        }
+        slot {
+          display: block;
+          padding: 10px;
+          margin: 5px 0;
+          background: #f3f4f6;
+          border: 1px solid #d1d5db;
+          border-radius: 4px;
+        }
+        slot:before {
+          content: "Slot: " attr(name);
+          font-weight: bold;
+          color: #6b7280;
+          font-size: 12px;
+        }
+        div[slot] {
+          background: #dbeafe;
+          padding: 8px;
+          margin: 4px 0;
+          border-radius: 4px;
+        }
+      `);
+      return sheet;
+    })(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story demonstrates slot assignment functionality. Switch between "named" and "manual" to see how slot assignment behavior changes in Shadow DOM.',
+      },
+    },
+  },
+};
+
+export const ConnectedCallbackDemo: Story = {
+  args: {
+    children: React.createElement('div', { className: 'callback-demo' },
+      React.createElement('h3', null, 'Connected Callback Demo'),
+      React.createElement('p', null, 'Check the browser console to see the connected callback output!'),
+      React.createElement('div', { id: 'callback-info' }, 'Callback info will be logged to console'),
+      React.createElement('button', { 
+        onClick: () => console.log('Button clicked inside Shadow DOM') 
+      }, 'Click me to test event handling')
+    ),
+    shadowrootmode: 'open',
+    connectedCallback: (shadowRoot: ShadowRoot, hostElement: HTMLDivElement) => {
+      console.log('🎉 Shadow DOM Connected!');
+      console.log('Shadow Root:', shadowRoot);
+      console.log('Host Element:', hostElement);
+      console.log('Shadow Root Mode:', shadowRoot.mode);
+      console.log('Host Element Tag:', hostElement.tagName);
+      
+      // Example: Add some dynamic content after connection
+      const infoDiv = shadowRoot.querySelector('#callback-info') as HTMLElement;
+      if (infoDiv) {
+        infoDiv.textContent = `Connected at: ${new Date().toLocaleTimeString()}`;
+        infoDiv.style.color = '#059669';
+        infoDiv.style.fontWeight = 'bold';
+      }
+      
+      // Example: Add a custom event listener
+      shadowRoot.addEventListener('click', (event) => {
+        console.log('Click event in Shadow DOM:', event.target);
+      });
+      
+      // Example: Modify host element
+      hostElement.style.border = '2px solid #10b981';
+      hostElement.style.borderRadius = '8px';
+      hostElement.style.padding = '4px';
+    },
+    sheet: (() => {
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(`
+        .callback-demo {
+          padding: 20px;
+          font-family: Arial, sans-serif;
+          background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+          border-radius: 8px;
+        }
+        .callback-demo h3 {
+          color: #059669;
+          margin-top: 0;
+        }
+        .callback-demo button {
+          background: #059669;
+          color: white;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          margin-top: 12px;
+        }
+        .callback-demo button:hover {
+          background: #047857;
+        }
+        #callback-info {
+          background: #ecfdf5;
+          border: 1px solid #bbf7d0;
+          padding: 8px 12px;
+          border-radius: 4px;
+          margin: 12px 0;
+          font-family: monospace;
+        }
+      `);
+      return sheet;
+    })(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story demonstrates the connectedCallback functionality. The callback is executed when the Shadow DOM is successfully created and provides access to both the shadow root and host element. Open the browser console to see the callback output and interactions.',
+      },
+    },
+  },
+};
 
