@@ -45,7 +45,8 @@ export const Template: React.FC<TemplateProps> = ({
                 mode: shadowrootmode, 
                 delegatesFocus: shadowrootdelegatesfocus, 
                 clonable: shadowrootclonable, 
-                serializable: shadowrootserializable 
+                serializable: shadowrootserializable,
+                slotAssignment: 'named'
             });
             if (shadowDom) {
                 rootRef.current = createRoot(shadowDom);
