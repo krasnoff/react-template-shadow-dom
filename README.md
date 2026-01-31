@@ -13,14 +13,14 @@ A React component that enables easy integration of Shadow DOM functionality in y
 ## Installation
 
 ```bash
-npm install react-vite-npm-template
+npm i @krasnoff/react-shadow-dom-component
 ```
 
 ## Basic Usage
 
 ```tsx
 import React from 'react';
-import { Template } from 'react-vite-npm-template';
+import { Template } from '@krasnoff/react-shadow-dom-component'
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
 
 ```tsx
 import React from 'react';
-import { Template } from 'react-vite-npm-template';
+import { Template } from '@krasnoff/react-shadow-dom-component'
 
 function StyledComponent() {
   // Create a CSS stylesheet for the Shadow DOM
@@ -298,10 +298,6 @@ function ConnectedCallbackExample() {
 - Shadow DOM creation has a small overhead
 - Adopted stylesheets are more performant than inline styles
 - The component handles cleanup automatically to prevent memory leaks
-
-## Examples Repository
-
-Check out the [Storybook stories](./src/components/react-template/react-template.stories.ts) for more interactive examples and use cases.
 
 ## License
 

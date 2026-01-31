@@ -1,5 +1,5 @@
 {
-  "name": "react-vite-npm-template",
+  "name": "@krasnoff/react-shadow-dom-component",
   "private": false,
   "version": "1.0.0",
   "description": "Implementation of a react shadow-dom component template using vite for npm package distribution",
@@ -11,9 +11,7 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./styles": "./dist/react-vite-npm-template.css",
-    "./dist/react-vite-npm-template.css": "./dist/react-vite-npm-template.css"
+    }
   },
   "files": [
     "dist"
